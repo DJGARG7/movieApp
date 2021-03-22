@@ -1,0 +1,16 @@
+<%- include("./partials/header")%>
+<h2>About Movie</h2>
+<%if(movieData.Response==='False'){%>
+    <h1>Movie not found!</h1>
+    
+<%}else{%>
+    <%= movieData.Rated%>
+    <ul>
+        <%movieData['Ratings'].forEach((rate)=>{%>
+        <li><%= rate.Source%> -><%= rate.Value%></li>
+        <%})%>
+    </ul>
+    <%}%>
+
+
+    <%- include("./partials/footer")%>
