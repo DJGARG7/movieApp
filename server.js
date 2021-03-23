@@ -1,7 +1,8 @@
 const express = require('express');
 const request = require('request')
 const app = express()
-
+const dotenv = require('dotenv')
+dotenv.config()
 // middlewares
 app.set("view engine","ejs")
 app.use('/public',express.static('public'))
@@ -41,7 +42,7 @@ async function makeRequest(url) {
 app.get('/result',async (req,res)=>{
     // console.log(req.query)
 
-    const url = `http://www.omdbapi.com/?i=tt3896198&apikey=522b08e7&s=${req.query.movie}`
+    const url = `http://www.omdbapi.com/?i=tt3896198&apikey=${process.env.API_KEY}&s=${req.query.movie}`
 
     try {
         // If request is sucessful, json data will be assigned to data. If not, will throw an exception
