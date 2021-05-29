@@ -32,39 +32,82 @@ async function makeRequest(url) {
                 resolve(data)  
             } else {
                 // Sort of like asynchronous throw Exception
-                reject(`Request to OMDB API returns status code ${response.status}`)
+                console.log(url);
+                reject(`Request to OMDB API returns status code ${response.statusCode}`)
             }          
         })
     })
 }
 
+// function callBalck(error, response, body) {
 
+// }
+
+// let data = makeRequest('test.com')
 app.get('/result',async (req,res)=>{
     // console.log(req.query)
+    console.log('Result');
 
     const url = `http://www.omdbapi.com/?i=tt3896198&apikey=${process.env.API_KEY}&s=${req.query.movie}`
 
     try {
         // If request is sucessful, json data will be assigned to data. If not, will throw an exception
         const data = await makeRequest(url)
+
+        // console.log(data);
+        // data = {Search: [{imdbID}]}
+        // movie: {plot}
         // console.log(data);
         let dat = { Search: [],Response: 'True' }
-    
-        for( let movie of data['Search'] ) {
-                // console.log(movie);
-                let url0 = `http://www.omdbapi.com/?apikey=522b08e7&i=${movie.imdbID}`               
-                 makeRequest(url0).then(data => {
-                     movie.plot = data.Plot
-                     dat.Search.push(movie)
-                 })
-        }
 
-    // await Promise.all(data['Search'].map(async movie => {
-    //         const data = await makeRequest(url0)
-    //         movie.plot = data.plot
-    //         dat.Search.push(movie)
-    // })) 
-        setTimeout(()=>{ res.render("result",{movieData:dat})},2000)
+        // await Promise.all()
+
+        // let promises = []
+    
+        // for( let movie of data['Search'] ) {
+        //         // console.log(movie);
+        //         let url0 = `http://www.omdbapi.com/?apikey=522b08e7&i=${movie.imdbID}`
+                
+        //         // const movieDetail = await makeRequest(url0)
+        //         // movie.plot = movieDetail.Plot
+        //         // dat.Search.push(movie)
+                
+        //         // console.log(movieDetail)
+        //         // console.log('---------------------------------------------------------------');
+
+                // promises.push(makeRequest(url0))
+
+               
+        //         //  makeRequest(url0).then(data => {
+        //         //      movie.plot = data.Plot
+        //         //      dat.Search.push(movie)
+        //         //  })
+        // }
+
+        // const movieDetails = await Promise.all(promises);
+
+        // data['Search'] = [{imdbID: 0},{imdbID: 1},{imdbID: 2}]
+        // mapReturn = [promise0,promise1,promise2]
+
+        // console.log(data['Search'])
+
+        await Promise.all( data['Search'].map( async movie => {
+            let url0 = `http://www.omdbapi.com/?apikey=522b08e7&i=${movie.imdbID}`
+            console.log(url0);
+            const movieDetail = await makeRequest(url0)
+            console.log(movieDetail);
+            movie.plot = movieDetail.Plot
+            dat.Search.push(movie)
+        }))
+
+        // movieDetails.forEach(movieDetail => {
+        //     movie.plot = movieDetail.Plot
+        //     dat.Search.push(movie)
+        // })
+
+        res.render("result",{movieData:dat})
+
+        // setTimeout(()=>{ res.render("result",{movieData:dat})},2000)
        
     } catch(e) {
         res.status('501').send({'Error': 'OMDB API error', 'Message': e});
